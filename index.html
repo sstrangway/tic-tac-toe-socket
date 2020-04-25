@@ -1,0 +1,63 @@
+<html>
+<head<></head>
+<style>
+    div {
+        width: 40px;
+        height: 40px;
+        border: solid 1px black;
+        display: inline-block;
+        background-color: floralwhite;
+    }
+</style>
+<body>
+        <div name="tile" id="tile-0" onclick="makeMove(this)"></div>
+        <div name="tile" id="tile-1" onclick="makeMove(this)"></div>
+        <div name="tile" id="tile-2" onclick="makeMove(this)"></div>
+
+        <br>
+        <div name="tile" id="tile-3" onclick="makeMove(this)"></div>
+        <div name="tile" id="tile-4" onclick="makeMove(this)"></div>
+        <div name="tile" id="tile-5" onclick="makeMove(this)"></div>
+
+        <br>
+        <div name="tile" id="tile-6" onclick="makeMove(this)"></div>
+        <div name="tile" id="tile-7" onclick="makeMove(this)"></div>
+        <div name="tile" id="tile-8" onclick="makeMove(this)"></div>
+
+        <form id="game-form" onsubmit="makeMove(); return false" action="">
+            <button>Send</button>
+        </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket =  io();
+        socket.on('test', (data) => {
+            console.log(data);
+        });
+        var form = document.getElementById('game-form');
+        console.log(form);
+        function makeMove(element) {
+
+            // if tile has not been clicked yet
+            if(!element.getAttribute('class')) {
+                var att = document.createAttribute("class");       // Create a "class" attribute
+                att.value = "red";                           // Set the value of the class attribute
+
+                document.getElementById(element.id).style.backgroundColor = "red";
+                document.getElementById(element.id).setAttributeNode(att);
+
+                move = parseInt(element.id.split('-')[1]);
+                socket.emit('move', {move: ['','','','','','','','','']});
+            }
+          
+        }
+
+        function getBoard() {
+           var tiles = Array.from(document.getElementsByName('tile'));
+           mappedTiles = tiles.map( (tile) => {
+               return tile.getAttribute('class');
+           });
+           console.log (mappedTiles);
+        }
+    </script>
+</body>
+</html>
