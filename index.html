@@ -30,8 +30,8 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket =  io();
-        socket.on('test', (data) => {
-            console.log(data);
+        socket.on('move', (board) => {
+            console.log("otherPlayerMoved: ", board);
         });
         var form = document.getElementById('game-form');
         console.log(form);
@@ -56,7 +56,6 @@
            mappedTiles = tiles.map( (tile) => {
                return tile.getAttribute('class');
            });
-           console.log (mappedTiles);
         }
     </script>
 </body>

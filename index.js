@@ -16,9 +16,9 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log("socket.id joined: ", socket.id)
   
-  socket.on('move', (move) => {
-    console.log(move);
-    socket.emit('test', move)
+  socket.on('move', (board) => {
+    console.log("move event: ", board);
+    socket.broadcast.emit('move', board)
   });
 
 });
