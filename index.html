@@ -30,6 +30,13 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket =  io();
+        let color = '';
+
+        socket.on('gameStart', (player) => {
+            color = player.color;
+            console.log("player: : ", player);
+        });
+
         socket.on('move', (board) => {
             console.log("otherPlayerMoved: ", board);
         });
@@ -42,7 +49,7 @@
                 var att = document.createAttribute("class");       // Create a "class" attribute
                 att.value = "red";                           // Set the value of the class attribute
 
-                document.getElementById(element.id).style.backgroundColor = "red";
+                document.getElementById(element.id).style.backgroundColor = color;
                 document.getElementById(element.id).setAttributeNode(att);
 
                 move = parseInt(element.id.split('-')[1]);
