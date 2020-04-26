@@ -37,8 +37,13 @@
             console.log("player: : ", player);
         });
 
-        socket.on('move', (board) => {
-            console.log("otherPlayerMoved: ", board);
+        socket.on('move', (data) => {
+            console.log("otherPlayerMoved: ", data.color);
+            console.log("otherPlayerMoved: ", data.tileIndex);
+            var att = document.createAttribute("class");       // Create a "class" attribute
+            att.value = data.color;                           // Set the value of the class attribute
+            document.getElementById(data.tileIndex).style.backgroundColor = data.color;
+            document.getElementById(data.tileIndex).setAttributeNode(att);
         });
         var form = document.getElementById('game-form');
         console.log(form);
@@ -47,13 +52,11 @@
             // if tile has not been clicked yet
             if(!element.getAttribute('class')) {
                 var att = document.createAttribute("class");       // Create a "class" attribute
-                att.value = "red";                           // Set the value of the class attribute
-
+                att.value = color;                           // Set the value of the class attribute
                 document.getElementById(element.id).style.backgroundColor = color;
                 document.getElementById(element.id).setAttributeNode(att);
-
                 move = parseInt(element.id.split('-')[1]);
-                socket.emit('move', {move: ['','','','','','','','','']});
+                socket.emit('move', {board: getBoard(), color: color, tileIndex: element.id});
             }
           
         }
@@ -63,6 +66,7 @@
            mappedTiles = tiles.map( (tile) => {
                return tile.getAttribute('class');
            });
+           return mappedTiles;
         }
     </script>
 </body>
