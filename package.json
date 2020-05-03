@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "nodeman": "^1.1.2",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }
