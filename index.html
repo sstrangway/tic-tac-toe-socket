@@ -10,6 +10,7 @@
     }
 </style>
 <body>
+        <h1 id="winner"> </h1>
         <div name="tile" id="tile-0" onclick="makeMove(this)"></div>
         <div name="tile" id="tile-1" onclick="makeMove(this)"></div>
         <div name="tile" id="tile-2" onclick="makeMove(this)"></div>
@@ -24,9 +25,6 @@
         <div name="tile" id="tile-7" onclick="makeMove(this)"></div>
         <div name="tile" id="tile-8" onclick="makeMove(this)"></div>
 
-        <form id="game-form" onsubmit="makeMove(); return false" action="">
-            <button>Send</button>
-        </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket =  io();
@@ -35,6 +33,11 @@
         socket.on('gameStart', (player) => {
             color = player.color;
             console.log("player: : ", player);
+        });
+
+        socket.on('gameOver', (data) => {
+            console.log("game over winner is : ", data.winner);
+            document.getElementById("winner").innerHTML = data.winner + ' is the winner';
         });
 
         socket.on('move', (data) => {

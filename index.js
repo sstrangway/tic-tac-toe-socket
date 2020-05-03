@@ -29,7 +29,7 @@ io.on('connection', (socket) => {
     const winningTiles = [
       [0,1,2], [3,4,5], [6,7,8],
       [0,3,6], [1,4,7], [2,5,8],
-      [0,4,6], [2,4,6]
+      [0,4,8], [2,4,6]
     ];
 
     let board = data.board;
@@ -40,8 +40,10 @@ io.on('connection', (socket) => {
         board[winningCombo[1]] === board[winningCombo[2]] &&
         board[winningCombo[0]] && board[winningCombo[1]] && board[winningCombo[2]] ;
     });
-    console.log("gameOver: " , gameOver)
 
+    if(gameOver){
+      io.emit('gameOver', { winner: data.color } )
+    }
   });
 
   socket.on('disconnect', () => {
