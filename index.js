@@ -51,7 +51,7 @@ app.use('/:id', (req, res) => {
 io.on('connection', (socket) => {
 
   // console.log("Total sockets joined: ", Object.keys(io.sockets.sockets).length);
-  socket.emit('gameStart', {color: x++ == 0 ? 'red' : 'blue'});
+  socket.emit('gameStart');
   
   socket.on('move', (data) => {
     // console.log("move event: ", data);

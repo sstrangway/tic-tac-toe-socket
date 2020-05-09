@@ -11,6 +11,7 @@
 </style>
 <body>
         <span>{{name}}</span>
+        <color>{{color}}</color>
         <h1 id="winner"> </h1>
         <div name="tile" id="tile-0" onclick="makeMove(this)"></div>
         <div name="tile" id="tile-1" onclick="makeMove(this)"></div>
@@ -29,10 +30,9 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket =  io();
-        let color = '';
+        let color = "{{color}}";
 
         socket.on('gameStart', (player) => {
-            color = player.color;
             console.log("player: : ", player);
         });
 
