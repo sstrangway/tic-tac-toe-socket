@@ -18,6 +18,10 @@ let player2;
 let room;
 let waitingForPlayer2 = false;
 
+
+
+let games = {};
+
 app.use(bodyPaser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
@@ -27,25 +31,26 @@ app.get('/', (req, res) => {
 app.post('/start-game', (req, res) => {
   let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
   player1 = req.body.name;
+
+  let game = {};
+  game.player1 = req.body.name;
+  games[r] = game;
+
   createNewRoom(r);
-  res.redirect('/'+r);
+  res.redirect(307, '/'+r);
 });
 
-app.use('/:id', (req, res) => {
-  room = req.params.id;
+app.post('/:id', (req, res) => {
+  games[req.params.id].waitingForPlayer2 = true;
 
-  let name = '';
+  res.render('index', { name: games[req.params.id].player1, room: req.params.id, color: "red"});
+});
 
-  if(!waitingForPlayer2){
-    name = player1;
-    color = "red"; 
-  } else {
-    name = "player2";
-    color = "blue"
-  }
-  waitingForPlayer2 = true;
+app.get('/:id', (req, res) => {
+  games[req.params.id].waitingForPlayer2 = false;
 
-  res.render('index', {name: name, room: room, color: color});
+  games[req.params.id].player2 = "player2"
+  res.render('index', { name: games[req.params.id].player2, room: req.params.id, color: "blue"});
 });
 
 
