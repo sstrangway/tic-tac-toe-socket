@@ -3,6 +3,8 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const bodyPaser = require('body-parser')
 
+app.set('views', __dirname);
+app.set("view engine","hbs");
 
 var board = ['','','','','','','','',''];
 var gameState= {
@@ -11,6 +13,11 @@ var gameState= {
   winner: '',
 }
 let x = 0;
+let player1;
+let player2;
+let room;
+let waitingForPlayer2 = false;
+
 app.use(bodyPaser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
@@ -19,14 +26,25 @@ app.get('/', (req, res) => {
 
 app.post('/start-game', (req, res) => {
   let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
-  console.log(req.body);
-  res.redirect('/'+"test")
+  player1 = req.body.name;
+  res.redirect('/'+r);
 });
 
 app.use('/:id', (req, res) => {
-  console.log("test");
-  console.log(req.params);
-  res.sendFile(__dirname + '/index.html');
+  room = req.params.id;
+
+  let name = '';
+
+  if(!waitingForPlayer2){
+    name = player1;
+    color = "red"; 
+  } else {
+    name = "player2";
+    color = "blue"
+  }
+  waitingForPlayer2 = true;
+
+  res.render('index', {name: name, room: room, color: color});
 });
 
 
