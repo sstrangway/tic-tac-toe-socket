@@ -1,6 +1,8 @@
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const bodyPaser = require('body-parser')
+
 
 var board = ['','','','','','','','',''];
 var gameState= {
@@ -9,10 +11,24 @@ var gameState= {
   winner: '',
 }
 let x = 0;
+app.use(bodyPaser.urlencoded({extended: false}));
 
 app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/start.html');
+});
+
+app.post('/start-game', (req, res) => {
+  let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
+  console.log(req.body);
+  res.redirect('/'+"test")
+});
+
+app.use('/:id', (req, res) => {
+  console.log("test");
+  console.log(req.params);
   res.sendFile(__dirname + '/index.html');
 });
+
 
 io.on('connection', (socket) => {
 
