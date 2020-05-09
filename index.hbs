@@ -29,7 +29,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket =  io();
+        const socket =  io('/'+ "{{room}}");
         let color = "{{color}}";
 
         socket.on('gameStart', (player) => {

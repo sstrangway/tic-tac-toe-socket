@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
 app.post('/start-game', (req, res) => {
   let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
   player1 = req.body.name;
+  createNewRoom(r);
   res.redirect('/'+r);
 });
 
@@ -48,43 +49,47 @@ app.use('/:id', (req, res) => {
 });
 
 
-io.on('connection', (socket) => {
+function createNewRoom(name) {
+  let nsp = io.of('/'+name);
 
-  // console.log("Total sockets joined: ", Object.keys(io.sockets.sockets).length);
-  socket.emit('gameStart');
-  
-  socket.on('move', (data) => {
-    // console.log("move event: ", data);
-    socket.broadcast.emit('move', { color: data.color, tileIndex: data.tileIndex } )
-    // check if someone has won
-    // 0 1 2 
-    // 3 4 5 
-    // 6 7 8
-    const winningTiles = [
-      [0,1,2], [3,4,5], [6,7,8],
-      [0,3,6], [1,4,7], [2,5,8],
-      [0,4,8], [2,4,6]
-    ];
+  nsp.on('connection', (socket) => {
 
-    let board = data.board;
-    gameOver = winningTiles.some( (winningCombo) => {
-      console.log(winningCombo);
-      console.log(board);
-      return board[winningCombo[0]] === board[winningCombo[1]] && 
-        board[winningCombo[1]] === board[winningCombo[2]] &&
-        board[winningCombo[0]] && board[winningCombo[1]] && board[winningCombo[2]] ;
+    // console.log("Total sockets joined: ", Object.keys(io.sockets.sockets).length);
+    socket.emit('gameStart');
+    
+    socket.on('move', (data) => {
+      // console.log("move event: ", data);
+      socket.broadcast.emit('move', { color: data.color, tileIndex: data.tileIndex } )
+      // check if someone has won
+      // 0 1 2 
+      // 3 4 5 
+      // 6 7 8
+      const winningTiles = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+
+      let board = data.board;
+      gameOver = winningTiles.some( (winningCombo) => {
+        console.log(winningCombo);
+        console.log(board);
+        return board[winningCombo[0]] === board[winningCombo[1]] && 
+          board[winningCombo[1]] === board[winningCombo[2]] &&
+          board[winningCombo[0]] && board[winningCombo[1]] && board[winningCombo[2]] ;
+      });
+
+      if(gameOver){
+        io.emit('gameOver', { winner: data.color } )
+      }
     });
 
-    if(gameOver){
-      io.emit('gameOver', { winner: data.color } )
-    }
+    socket.on('disconnect', () => {
+      x--;
+      io.emit('user disconnected');
+    });
   });
-
-  socket.on('disconnect', () => {
-    x--;
-    io.emit('user disconnected');
-  });
-});
+}
 
 http.listen(3000, () => {
   console.log('listening on *:3000');
