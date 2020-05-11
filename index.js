@@ -6,20 +6,6 @@ const bodyPaser = require('body-parser')
 app.set('views', __dirname);
 app.set("view engine","hbs");
 
-var board = ['','','','','','','','',''];
-var gameState= {
-  board: board,
-  playerTurn: '1',
-  winner: '',
-}
-let x = 0;
-let player1;
-let player2;
-let room;
-let waitingForPlayer2 = false;
-
-
-
 let games = {};
 
 app.use(bodyPaser.urlencoded({extended: false}));
@@ -30,7 +16,6 @@ app.get('/', (req, res) => {
 
 app.post('/start-game', (req, res) => {
   let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
-  player1 = req.body.name;
 
   let game = {};
   game.player1 = req.body.name;
@@ -85,13 +70,8 @@ function createNewRoom(name) {
       });
 
       if(gameOver){
-        io.emit('gameOver', { winner: data.color } )
+        nsp.emit('gameOver', { winner: data.color } )
       }
-    });
-
-    socket.on('disconnect', () => {
-      x--;
-      io.emit('user disconnected');
     });
   });
 }
