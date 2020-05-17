@@ -27,7 +27,7 @@ app.post('/start-game', (req, res) => {
 
 app.post('/:id', (req, res) => {
   games[req.params.id].waitingForPlayer2 = true;
-
+  games[req.params.id].board = [null,null,null,null,null,null,null,null,null];
   res.render('index', { name: games[req.params.id].player1, room: req.params.id, color: "red"});
 });
 
@@ -49,7 +49,12 @@ function createNewRoom(name) {
     
     socket.on('move', (data) => {
       // console.log("move event: ", data);
-      socket.broadcast.emit('move', { color: data.color, tileIndex: data.tileIndex } )
+      socket.broadcast.emit('move', { color: data.color, tileId: data.tileId} )
+
+      //update current game board
+      console.log(data)
+      games[data.room].board[data.moveIndex] = data.color;
+      console.log(games[data.room].board[data.moveIndex]);
       // check if someone has won
       // 0 1 2 
       // 3 4 5 
