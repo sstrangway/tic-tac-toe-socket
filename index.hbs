@@ -41,13 +41,11 @@
         });
 
         socket.on('move', (data) => {
-            console.log(data.game);
 
             updateBoard(data.game);
            
         });
         var form = document.getElementById('game-form');
-        console.log(form);
         function makeMove(element) {
 
             // if tile has not been clicked yet

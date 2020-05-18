@@ -56,7 +56,7 @@ function createNewRoom(name) {
       // TODO: do some validation that move was legal
       games[data.room].board[data.moveIndex] = data.color;
 
-      socket.broadcast.emit('move', { color: data.color, tileId: data.tileId, game: games[data.room]} )
+      socket.broadcast.emit('move', { game: games[data.room]} )
 
 
       console.log(games[data.room].board[data.moveIndex]);
