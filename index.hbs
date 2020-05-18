@@ -37,32 +37,27 @@
         });
 
         socket.on('gameOver', (data) => {
-            console.log("game over winner is : ", data.winner);
             document.getElementById("winner").innerHTML = data.winner + ' is the winner';
         });
 
         socket.on('move', (data) => {
-            console.log("otherPlayerMoved: ", data.color);
-            console.log("otherPlayerMoved: ", data.tileId);
-            var att = document.createAttribute("class");       // Create a "class" attribute
-            att.value = data.color;                           // Set the value of the class attribute
-            document.getElementById(data.tileId).style.backgroundColor = data.color;
-            document.getElementById(data.tileId).setAttributeNode(att);
+            console.log(data.game);
+
+            updateBoard(data.game);
+           
         });
         var form = document.getElementById('game-form');
         console.log(form);
         function makeMove(element) {
 
             // if tile has not been clicked yet
-            if(!element.getAttribute('class')) {
-                var att = document.createAttribute("class");       // Create a "class" attribute
-                att.value = color;                           // Set the value of the class attribute
-                document.getElementById(element.id).style.backgroundColor = color;
-                document.getElementById(element.id).setAttributeNode(att);
-                move = parseInt(element.id.split('-')[1]);
-                socket.emit('move', {board: getBoard(), color: color, tileId: element.id, room: room, moveIndex: move});
-            }
-          
+            var att = document.createAttribute("class");       // Create a "class" attribute
+            att.value = color;                           // Set the value of the class attribute
+            document.getElementById(element.id).style.backgroundColor = color;
+            document.getElementById(element.id).setAttributeNode(att);
+            move = parseInt(element.id.split('-')[1]);
+            socket.emit('move', {board: getBoard(), color: color, tileId: element.id, room: room, moveIndex: move});
+        
         }
 
         function getBoard() {
@@ -71,6 +66,16 @@
                return tile.getAttribute('class');
            });
            return mappedTiles;
+        }
+
+        function updateBoard(game) {
+            for(let i = 0; i < game.board.length; i ++){
+                var att = document.createAttribute("class");       // Create a "class" attribute
+                att.value = game.board[i];
+                document.getElementById("tile-"+i).style.backgroundColor = game.board[i];
+                document.getElementById("tile-"+i).setAttributeNode(att);
+            }
+           
         }
     </script>
 </body>

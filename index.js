@@ -49,12 +49,20 @@ function createNewRoom(name) {
     
     socket.on('move', (data) => {
       // console.log("move event: ", data);
-      socket.broadcast.emit('move', { color: data.color, tileId: data.tileId} )
 
       //update current game board
       console.log(data)
+
+      // TODO: do some validation that move was legal
       games[data.room].board[data.moveIndex] = data.color;
+
+      socket.broadcast.emit('move', { color: data.color, tileId: data.tileId, game: games[data.room]} )
+
+
       console.log(games[data.room].board[data.moveIndex]);
+      // [ 'blue', 'red', 'red', 
+      //   'null', 'red', 'red', 
+      //   'red', 'null', 'blue' ],
       // check if someone has won
       // 0 1 2 
       // 3 4 5 
@@ -65,10 +73,8 @@ function createNewRoom(name) {
         [0,4,8], [2,4,6]
       ];
 
-      let board = data.board;
+      let board = games[data.room].board;
       gameOver = winningTiles.some( (winningCombo) => {
-        console.log(winningCombo);
-        console.log(board);
         return board[winningCombo[0]] === board[winningCombo[1]] && 
           board[winningCombo[1]] === board[winningCombo[2]] &&
           board[winningCombo[0]] && board[winningCombo[1]] && board[winningCombo[2]] ;
