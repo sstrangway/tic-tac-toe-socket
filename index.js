@@ -28,14 +28,26 @@ app.post('/start-game', (req, res) => {
 app.post('/:id', (req, res) => {
   games[req.params.id].waitingForPlayer2 = true;
   games[req.params.id].board = [null,null,null,null,null,null,null,null,null];
-  res.render('index', { name: games[req.params.id].player1, room: req.params.id, color: "red"});
+  games[req.params.id].player1Id = Math.random().toString(36).substring(7);
+  res.render('index', { name: games[req.params.id].player1Id, room: req.params.id, color: "red"});
 });
 
 app.get('/:id', (req, res) => {
+  // asign unique id's to each player
+  // create a currentTurn object
+  // create a lastTurn object
   games[req.params.id].waitingForPlayer2 = false;
 
+  // make sure player2Id is not equal to player one id
+  let player2Id;
+  do {
+    player2Id = Math.random().toString(36).substring(7);
+  }
+  while (player2Id === games[req.params.id].player1Id)
+  games[req.params.id].player2Id = player2Id;
+
   games[req.params.id].player2 = "player2"
-  res.render('index', { name: games[req.params.id].player2, room: req.params.id, color: "blue"});
+  res.render('index', { name: games[req.params.id].player2Id, room: req.params.id, color: "blue"});
 });
 
 
@@ -48,25 +60,13 @@ function createNewRoom(name) {
     socket.emit('gameStart');
     
     socket.on('move', (data) => {
-      // console.log("move event: ", data);
-
-      //update current game board
-      console.log(data)
-
+        //update current game board
       // TODO: do some validation that move was legal
       games[data.room].board[data.moveIndex] = data.color;
 
+      games[data.room].lastMove = data.playerId
+      console.log("move event: ", games[data.room]);
       socket.broadcast.emit('move', { game: games[data.room]} )
-
-
-      console.log(games[data.room].board[data.moveIndex]);
-      // [ 'blue', 'red', 'red', 
-      //   'null', 'red', 'red', 
-      //   'red', 'null', 'blue' ],
-      // check if someone has won
-      // 0 1 2 
-      // 3 4 5 
-      // 6 7 8
       const winningTiles = [
         [0,1,2], [3,4,5], [6,7,8],
         [0,3,6], [1,4,7], [2,5,8],

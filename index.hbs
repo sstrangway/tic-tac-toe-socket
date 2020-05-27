@@ -1,5 +1,5 @@
 <html>
-<head<></head>
+<head></head>
 <style>
     div {
         width: 40px;
@@ -32,15 +32,16 @@
         const socket =  io('/'+ "{{room}}");
         const color = "{{color}}";
         const room = "{{room}}"
-        socket.on('gameStart', (player) => {
-            console.log("player: : ", player);
+        const name = "{{name}}"
+        socket.on('gameStart', (data, id) => {
+            playerId = id
         });
 
         socket.on('gameOver', (data) => {
             document.getElementById("winner").innerHTML = data.winner + ' is the winner';
         });
 
-        socket.on('move', (data) => {
+        socket.on('move', (data, playerId) => {
 
             updateBoard(data.game);
            
@@ -54,7 +55,8 @@
             document.getElementById(element.id).style.backgroundColor = color;
             document.getElementById(element.id).setAttributeNode(att);
             move = parseInt(element.id.split('-')[1]);
-            socket.emit('move', {board: getBoard(), color: color, tileId: element.id, room: room, moveIndex: move});
+            console.log('playeid: ' + playerId);
+            socket.emit('move', {board: getBoard(), color: color, tileId: element.id, room: room, moveIndex: move, playerId: name});
         
         }
 
