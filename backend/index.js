@@ -28,8 +28,21 @@ app.post('/start-game', (req, res) => {
   game.player1 = req.body.name;
   games[r] = game;
 
-  createNewRoom(r);
+  // createNewRoom(r);
   // res.redirect(307, '/'+r);
+  let nsp = io.of('/' + r);
+  nsp.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('disconnect', () => {
+      console.log('user disconnected');
+    });
+    socket.on('my message', (msg) => {
+      console.log('message: ' + msg);
+    });
+    socket.on('move', (i) => {
+      console.log(i);
+    });
+  });
   res.send(r);
 });
 
@@ -57,6 +70,8 @@ app.get('/:id', (req, res) => {
   games[req.params.id].player2 = "player2"
   res.render('index', { name: games[req.params.id].player2Id, room: req.params.id, color: "blue"});
 });
+
+
 
 
 function createNewRoom(name) {
