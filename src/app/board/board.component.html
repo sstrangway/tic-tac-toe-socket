@@ -1,0 +1,8 @@
+<div>
+  <h1 id="winner"></h1>
+  <h2>name</h2>
+  <h2>color</h2>
+  <div class="grid-container">
+    <div *ngFor="let tile of tiles; index as i" class="grid-item" [ngClass]="{'selected': tile.clicked}" (click)="makeMove(i)"></div>
+  </div>
+</div>

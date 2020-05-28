@@ -8,7 +8,14 @@ app.set("view engine","hbs");
 
 let games = {};
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 app.use(bodyPaser.urlencoded({extended: false}));
+
+
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/start.html');
@@ -22,7 +29,8 @@ app.post('/start-game', (req, res) => {
   games[r] = game;
 
   createNewRoom(r);
-  res.redirect(307, '/'+r);
+  // res.redirect(307, '/'+r);
+  res.send(r);
 });
 
 app.post('/:id', (req, res) => {
