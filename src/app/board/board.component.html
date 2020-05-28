@@ -3,6 +3,11 @@
   <h2>name</h2>
   <h2>color</h2>
   <div class="grid-container">
-    <div *ngFor="let tile of tiles; index as i" class="grid-item" [ngClass]="{'selected': tile.clicked}" (click)="makeMove(i)"></div>
+    <div
+      *ngFor="let tile of tiles; index as i"
+      class="grid-item"
+      [ngStyle]="{ 'background-color': tiles[i] }"
+      (click)="makeMove(i)"
+    ></div>
   </div>
 </div>

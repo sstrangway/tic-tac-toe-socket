@@ -23,7 +23,8 @@ export class StartComponent implements OnInit {
       .post("http://localhost:3000/start-game", name, { responseType: "text" })
       .subscribe((token) => {
         this.roomToken = token;
-        this.socketService.setupSocketConnection(token);
+        this.socketService.setupSocketConnection();
+        this.socketService.setHost(true);
         this.router.navigate(["/board", token]);
       });
   }

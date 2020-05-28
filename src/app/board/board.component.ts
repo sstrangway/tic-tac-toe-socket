@@ -9,47 +9,28 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class BoardComponent implements OnInit {
 
-  tiles = [
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-    {
-      clicked: false
-    },
-  ];
+  tiles = ['','','','','','','','',''];
 
   constructor(private socketService: SocketioService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.params.id;
-    if(id) {
-      this.socketService.setupSocketConnection(id);
+    this.socketService.setupSocketConnection();
+
+    if(this.socketService.getHost()) {
+      this.socketService.createRoom(id);
+    } else {
+      this.socketService.getSocket().emit('joinRoom', id);
+      console.log('joining!');
     }
+    this.socketService.getSocket().on('update', (board) => {
+      console.log('updated');
+      this.tiles = board;
+    });
+    console.log(this.socketService.getHost());
   }
 
   makeMove(i: string) {
-    this.tiles[i].clicked = true;
     this.socketService.getSocket().emit('move', i);
   }
 

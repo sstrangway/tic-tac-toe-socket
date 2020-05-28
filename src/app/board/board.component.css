@@ -11,6 +11,9 @@
   font-size: 30px;
   text-align: center;
 }
-.selected {
+.selected-red {
   background-color: red;
+}
+.selected-blue {
+  background-color: blue;
 }

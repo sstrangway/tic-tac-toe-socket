@@ -24,14 +24,17 @@ app.get('/', (req, res) => {
 app.post('/start-game', (req, res) => {
   let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
 
-  let game = {};
-  game.player1 = req.body.name;
-  games[r] = game;
+  // let game = {};
+  // game.player1 = req.body.name;
+  // games[r] = game;
 
   // createNewRoom(r);
   // res.redirect(307, '/'+r);
-  let nsp = io.of('/' + r);
+  
+  let nsp = io.of(r);
   nsp.on('connection', (socket) => {
+    let board = ['','','','','','','','',''];
+    socket.emit('update', board);
     console.log('a user connected');
     socket.on('disconnect', () => {
       console.log('user disconnected');
@@ -41,6 +44,8 @@ app.post('/start-game', (req, res) => {
     });
     socket.on('move', (i) => {
       console.log(i);
+      board[i] = 'red';
+      socket.emit('update', board);
     });
   });
   res.send(r);
