@@ -29,7 +29,7 @@ app.post("/start-game", (req, res) => {
   res.send(roomToken);
   // set up room
   const nsp = io.of("/" + roomToken);
-  let board = ["red", "", "", "", "", "", "", "", ""];
+  let board = ["", "", "", "", "", "", "", "", ""];
   const colors = ["red", "blue"];
   let users = 0;
   // handle events
@@ -50,6 +50,11 @@ app.post("/start-game", (req, res) => {
     // handle moves
     socket.on("move", (updatedBoard) => {
       nsp.emit("updated", updatedBoard);
+      board = updatedBoard;
+    });
+    // handle wins
+    socket.on("win", (color) => {
+      console.log(color + " Won!");
     });
   });
 });
