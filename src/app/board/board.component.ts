@@ -18,7 +18,7 @@ export class BoardComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.params.id;
-    this.socketService.setupSocketConnection();
+    this.socketService.setupSocketConnection('/' + id);
     console.log("called");
     this.socketService.getSocket().on("assignColor", (color) => {
       if(!this.color) {

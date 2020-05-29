@@ -11,8 +11,8 @@ export class SocketioService {
   
   constructor() { }
 
-  setupSocketConnection() {
-    this.socket = io(environment.SOCKET_ENDPOINT);
+  setupSocketConnection(namespace) {
+    this.socket = io(environment.SOCKET_ENDPOINT + namespace);
   }
   
   createRoom(nspId: string) {
