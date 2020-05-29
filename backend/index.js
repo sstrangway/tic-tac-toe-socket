@@ -21,6 +21,26 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/start.html');
 });
 
+let board = ['','','','','','','','',''];
+const colors = ['red','blue'];
+let users = 0;
+io.on('connection', (socket) => {
+  if(users <= 2) {
+    users++;
+    io.emit('assignColor', colors[users - 1]);
+    console.log('a user connected' + users);
+  }
+  io.emit('updated', board);
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+    users--;
+    board = ['','','','','','','','',''];
+  });
+  socket.on('move', (updatedBoard) => {
+    io.emit('updated', updatedBoard);
+  });
+});
+
 app.post('/start-game', (req, res) => {
   let r = Math.random().toString(36).substring(7) + Math.random().toString(36).substring(7);
 
@@ -31,23 +51,25 @@ app.post('/start-game', (req, res) => {
   // createNewRoom(r);
   // res.redirect(307, '/'+r);
   
-  let nsp = io.of(r);
-  nsp.on('connection', (socket) => {
-    let board = ['','','','','','','','',''];
-    socket.emit('update', board);
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-      console.log('user disconnected');
-    });
-    socket.on('my message', (msg) => {
-      console.log('message: ' + msg);
-    });
-    socket.on('move', (i) => {
-      console.log(i);
-      board[i] = 'red';
-      socket.emit('update', board);
-    });
-  });
+  // let nsp = io.of(r);
+  // nsp.on('connection', (socket) => {
+  //   let board = ['','','','','','','','',''];
+  //   socket.emit('update', board);
+  //   console.log('a user connected');
+  //   socket.on('disconnect', () => {
+  //     console.log('user disconnected');
+  //   });
+  //   socket.on('my message', (msg) => {
+  //     console.log('message: ' + msg);
+  //   });
+  //   socket.on('move', (i) => {
+  //     console.log(i);
+  //     board[i] = 'red';
+  //     socket.emit('update', board);
+  //   });
+  // });
+
+  
   res.send(r);
 });
 

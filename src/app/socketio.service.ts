@@ -13,7 +13,6 @@ export class SocketioService {
 
   setupSocketConnection() {
     this.socket = io(environment.SOCKET_ENDPOINT);
-    this.socket.emit('my message', 'Your joined the game');
   }
   
   createRoom(nspId: string) {
