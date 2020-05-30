@@ -11,6 +11,7 @@ export class BoardComponent implements OnInit {
   tiles = ["", "", "", "", "", "", "", "", ""];
   result = "";
   color;
+  id;
   constructor(
     private socketService: SocketioService,
     private route: ActivatedRoute
@@ -20,9 +21,10 @@ export class BoardComponent implements OnInit {
     const id = this.route.snapshot.params.id;
     this.socketService.setupSocketConnection('/' + id);
     console.log("called");
-    this.socketService.getSocket().on("assignColor", (color) => {
+    this.socketService.getSocket().on("assignColor", data => {
       if(!this.color) {
-        this.color = color;
+        this.color = data.color;
+        this.id= data.id;
         return;
       }
     });
@@ -57,12 +59,14 @@ export class BoardComponent implements OnInit {
     });
   }
 
-  makeMove(i: string) {
-    const updatedTiles = [...this.tiles];
-    updatedTiles[i] = this.color;
+  makeMove(i: number) {
+    // console.log("test");
+    // console.log(i);
+    // const updatedTiles = [...this.tiles];
+    // updatedTiles[i] = this.color;
     
-    this.socketService.getSocket().emit("move", updatedTiles);
-    this.tiles = updatedTiles;
-    this.checkWin();
+    this.socketService.getSocket().emit("move", {index: i, id: this.id});
+    // this.tiles = updatedTiles;
+    // this.checkWin();
   }
 }
