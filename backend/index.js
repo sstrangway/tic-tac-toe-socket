@@ -16,6 +16,7 @@ app.use(function (req, res, next) {
 app.use(bodyPaser.urlencoded({ extended: false }));
 
 app.post("/start-game", (req, res) => {
+
   let roomToken =
     Math.random().toString(36).substring(7) +
     Math.random().toString(36).substring(7);
@@ -28,6 +29,7 @@ app.post("/start-game", (req, res) => {
   let users = 0;
   let turn;
   let lastTurn;
+  let gameOver = false;
   // handle events
   nsp.on("connection", (socket) => {
 
@@ -54,13 +56,15 @@ app.post("/start-game", (req, res) => {
       console.log("user disconnected");
       users--;
       board = ["", "", "", "", "", "", "", "", ""];
+      gameOver = false;
     });
     // handle moves
     socket.on("move", (data) => {
 
-      console.log("turn: " + turn)
-      console.log("lastTurn: " + lastTurn)
-      console.log("id: " + data.id)
+      //check if game is over
+      if(gameOver){
+        return ; 
+      }
 
       // check if game started
       if(users < 2){
@@ -81,20 +85,40 @@ app.post("/start-game", (req, res) => {
       turn = lastTurn
       lastTurn = data.id;
 
+      // update board with ids
       board[data.index] = data.id;
 
+      // get colorBoard together for FE
       colorBoard = board.map( id => {
         const color = colors[ids.indexOf(id)];
         return color
       });
 
-      console.log(colorBoard);
+      // emit colorBoard to FE
       nsp.emit("updated", colorBoard);
+
+      // is game over
+      if(winnder(board)) {
+        gameOver = true;
+        nsp.emit("win", data.id);        
+      }
+
+      function winnder(board) {
+        const winningTiles = [
+          [0,1,2], [3,4,5], [6,7,8],
+          [0,3,6], [1,4,7], [2,5,8],
+          [0,4,8], [2,4,6]
+        ];
+      
+        return gameOver = winningTiles.some( (winningCombo) => {
+          return board[winningCombo[0]] === board[winningCombo[1]] && 
+            board[winningCombo[1]] === board[winningCombo[2]] &&
+            board[winningCombo[0]] !== "" && board[winningCombo[1]] !== "" && board[winningCombo[2]] !== "" ;
+        });
+      }
+      
     });
-    // handle wins
-    socket.on("win", (color) => {
-      console.log(color + " Won!");
-    });
+
   });
 });
 

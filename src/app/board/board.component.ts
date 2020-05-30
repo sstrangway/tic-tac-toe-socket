@@ -9,9 +9,10 @@ import { Router, ActivatedRoute } from "@angular/router";
 })
 export class BoardComponent implements OnInit {
   tiles = ["", "", "", "", "", "", "", "", ""];
-  result = "";
   color;
   id;
+  winnerId;
+  gameOver = false;
   constructor(
     private socketService: SocketioService,
     private route: ActivatedRoute
@@ -28,34 +29,14 @@ export class BoardComponent implements OnInit {
         return;
       }
     });
+
     this.socketService.getSocket().on("updated", (board) => {
       this.tiles = board;
     });
-  }
 
-  checkWin() {
-    const winningTiles = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    const indexes = [];
-    this.tiles.forEach((tile, i) => {
-      if(tile === this.color) {
-        indexes.push(i);
-      }
-    });
-
-    winningTiles.forEach(tile => {
-      if(tile.every(i => indexes.includes(i))) {
-        this.result = this.color;
-        this.socketService.getSocket().emit('win', this.color);
-      }
+    this.socketService.getSocket().on("win", (id) => {
+      this.gameOver = true;
+      this.winnerId = id;
     });
   }
 
